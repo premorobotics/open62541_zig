@@ -90,6 +90,11 @@ fn buildLibOpen62541(
         // Required to ignore memory bugs in open62541
         .flags = &.{"-fno-sanitize=undefined"},
     });
+    if (target.result.os.tag == .windows) {
+        // Winsock, and GetAdaptersAddresses for the network interfaces.
+        mod.linkSystemLibrary("ws2_32", .{});
+        mod.linkSystemLibrary("iphlpapi", .{});
+    }
     const lib = b.addLibrary(.{
         .name = "open62541",
         .root_module = mod,
